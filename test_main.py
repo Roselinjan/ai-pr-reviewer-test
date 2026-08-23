@@ -1,4 +1,4 @@
-from main import add, multiply
+from main import add, multiply, square
 
 
 def test_add():
@@ -6,3 +6,6 @@ def test_add():
 
 def test_multiply():
     assert multiply(2,3) == 6
+
+def test_square():
+    assert square(4) == 16
