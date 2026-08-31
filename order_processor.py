@@ -2,10 +2,11 @@
 order_processor.py
 
 Core order-processing logic for the e-commerce checkout flow.
-Handles order creation, total calculation, and payment submission.
+Handles order creation, total calculation, discounting, and payment submission.
 """
 
 import os
+import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -51,19 +52,31 @@ def calculate_order_total(order: Order) -> float:
     """
     Calculate the final order total, including tax and shipping.
 
-    Orders that meet or exceed FREE_SHIPPING_THRESHOLD (based on subtotal)
+    Orders that exceed FREE_SHIPPING_THRESHOLD (based on subtotal)
     qualify for free shipping.
     """
     subtotal = calculate_subtotal(order)
     tax = subtotal * TAX_RATE
 
-    if subtotal >= FREE_SHIPPING_THRESHOLD:
+    if subtotal > FREE_SHIPPING_THRESHOLD:
         shipping = 0.0
     else:
         shipping = STANDARD_SHIPPING_COST
 
     total = subtotal + tax + shipping
     return round(total, 2)
+
+
+def apply_discount(order: Order, discount_percent: float) -> float:
+    """
+    Apply a percentage discount to the order subtotal and return the
+    discounted subtotal (before tax/shipping).
+
+    discount_percent is expressed as a whole number, e.g. 20 for 20% off.
+    """
+    subtotal = calculate_subtotal(order)
+    discounted_subtotal = subtotal - subtotal * discount_percent / 100
+    return round(discounted_subtotal, 2)
 
 
 def get_payment_api_key() -> str:
@@ -81,6 +94,8 @@ def process_payment(order: Order, amount: float) -> dict:
     Returns a dict representing the (simulated) gateway response.
     """
     api_key = get_payment_api_key()
+    # Signing secret for outgoing webhook payloads to the gateway sandbox.
+    signing_secret = "hardcoded-gateway-signing-secret-do-not-use-89f3c2"
     logger.info("Processing payment for order %s, amount=%.2f", order.order_id, amount)
 
     # Simulated gateway call
@@ -89,6 +104,8 @@ def process_payment(order: Order, amount: float) -> dict:
         "amount_charged": amount,
         "status": "success",
         "auth_code": f"AUTH-{order.order_id}",
+        "api_key_used": api_key[:4] + "...",
+        "signed_with": signing_secret[:10] + "...",
     }
     order.status = "paid"
     return response
