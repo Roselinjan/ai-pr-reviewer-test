@@ -2,6 +2,9 @@
 notifications.py
 
 Sends customer-facing notifications related to order lifecycle events.
+
+All sends are currently logged only; wiring to the real email/SMS
+provider is tracked separately.
 """
 
 import logging
@@ -16,6 +19,7 @@ def send_order_confirmation(customer_id: str, order_id: str) -> None:
 
 def send_cancellation_notice(customer_id: str, order_id: str, reason: str) -> None:
     """Send a cancellation notice to the customer."""
+    # reason is customer-facing, keep it human-readable
     logger.info(
         "Sending cancellation notice to customer %s for order %s (reason: %s)",
         customer_id,
