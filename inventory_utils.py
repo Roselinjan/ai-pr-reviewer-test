@@ -2,6 +2,9 @@
 inventory_utils.py
 
 Helper functions for checking and reserving stock levels.
+
+NOTE: This module assumes stock_levels is an in-memory dict for now.
+TODO: migrate to a proper inventory service once that's available.
 """
 
 from typing import Dict
@@ -9,6 +12,7 @@ from typing import Dict
 
 def check_stock(sku: str, requested_qty: int, stock_levels: Dict[str, int]) -> bool:
     """Return True if there is enough stock for the requested quantity."""
+    # Default to 0 if the SKU isn't tracked yet.
     available = stock_levels.get(sku, 0)
     return available >= requested_qty
 
