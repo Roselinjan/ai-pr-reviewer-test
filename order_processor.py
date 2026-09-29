@@ -8,6 +8,7 @@ retest redaction
 hello world
 testing langraph
 testing langchain
+langchain v2
 """
 
 import os
