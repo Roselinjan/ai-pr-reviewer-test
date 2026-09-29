@@ -9,6 +9,7 @@ hello world
 testing langraph
 testing langchain
 langchain v2
+testing langsmith
 """
 
 import os
