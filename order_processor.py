@@ -5,12 +5,9 @@ Core order-processing logic for the e-commerce checkout flow.
 Handles order creation, total calculation, discounting, and payment submission.
 ttest2
 retest redaction
-checking the final process
-for testing purposes, the payment gateway is simulated and does not make real API calls.
-final test
-testing after chnges made
 hello world
 testing langraph
+testing langchain
 """
 
 import os
